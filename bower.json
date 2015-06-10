@@ -1,0 +1,12 @@
+{
+  "name": "ZoomerAutoComplete",
+  "version": "0.0.1",
+  "ignore": [
+    "example",
+    ".gitignore",
+    "bower.json",
+    "README.md"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}
