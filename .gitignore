@@ -1,4 +1,6 @@
 # WebStorm project files
 .idea/
 
+bower_components
+node_modules
 

@@ -2,11 +2,19 @@
   "name": "zoomer-auto-complete",
   "version": "0.0.1",
   "ignore": [
+    "bower_components",
     "example",
+    "node_modules",
+    "src",
     ".gitignore",
     "bower.json",
+    "gulpfile.js",
+    "package.json",
     "README.md"
   ],
-  "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "angular": "~1.4.0",
+    "bootstrap": "~3.3.4",
+    "font-awesome": "~4.3.0"
+  }
 }

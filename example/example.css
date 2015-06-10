@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font: 62.5% Arial, sans-serif;
+}
+
+.wrapper {
+  margin: 20px;
+  font-size: 14px;
+}
+
+pre {
+  font-size: 12px;
+}

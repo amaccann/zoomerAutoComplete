@@ -1,0 +1,100 @@
+@import "common";
+
+$z-border-radius: 5px;
+
+.z-auto-complete-wrapper {
+
+  input {
+    position: relative;
+    z-index: 1;
+  }
+
+  .z-auto-complete-input {
+    position: relative;
+  }
+
+  .z-auto-complete-results {
+    width: 100%;
+    min-width: 250px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    @include border-radius($z-border-radius);
+    @include box-shadow(0 2px 2px rgba(0, 0, 0, .5));
+    background: #fff;
+    z-index: 99;
+
+    p {
+      margin: 0;
+      padding: 5px;
+      text-align: right;
+      font-size: 10px;
+
+      span {
+        display: inline-block;
+        width: 50px;
+        height: 17px;
+        position: relative;
+        top: 5px;
+        background: url('../images/powered-by-google-on-white2_hdpi.png') 50% 50% no-repeat;
+        -webkit-background-size: auto 100%;
+        background-size: auto 100%;
+        overflow: hidden;
+        text-indent: 9999px;
+      }
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        height: 25px;
+        margin: 0;
+        padding: 0 5px;
+        border-top: 1px solid #eee;
+        @include set-text-overflow();
+
+        font-size: 12px;
+        color: #333;
+        line-height: 25px;
+
+        &:before {
+          font-family: FontAwesome, sans-serif;
+          content: '\f041';
+          font-size: 14px;
+          color: #ccc;
+          margin-right: 5px;
+        }
+
+        &.highlight {
+          background: #0b97c4;
+          color: #fff;
+          &:before {
+            color: #fff;
+          }
+        }
+
+        &:first-child {
+          border-top: 0;
+
+          &.highlight {
+            @include border-radius-on(top, left, $z-border-radius);
+            @include border-radius-on(top, right, $z-border-radius);
+          }
+        }
+
+        &:last-child {
+          &.highlight {
+            @include border-radius-on(bottom, left, $z-border-radius);
+            @include border-radius-on(bottom, right, $z-border-radius);
+          }
+        }
+      }
+    }
+
+  }
+
+}
