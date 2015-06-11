@@ -12,7 +12,7 @@
     '<div class="z-auto-complete-input"><input ng-focus="toggleShowDropdown(true)" ng-blur="blur()" type="text" ng-keyup="keyUp($event)">' +
     '<div ng-if="showDropdown && predictions.length" class="z-auto-complete-results"><ul>' +
     '<li ng-repeat="prediction in predictions" ng-click="setPrediction(prediction)" ng-class="{ selected: prediction.selected, highlight: $index === highlightIndex }">' +
-    '<i class="fa" ng-class="{ \'fa-cog fa-spin\': prediction.selected, \'fa-map-marker\': !prediction.selected }"></i><span ng-bind="prediction.description"></span>' +
+    '<i class="fa" ng-class="{ \'fa-cog fa-spin\': prediction.selected, \'fa-map-marker\': !prediction.selected }"></i><span ng-bind-html="prediction| zMatchSubStrings"></span>' +
     '</li>' +
     '</ul><p>Powered by <span>Google</span></p></div></div></div>';
 
@@ -26,6 +26,37 @@
     miles = miles || 5;
     return miles * 1609.34;
   }
+
+  /**
+   * Swap the text at start:end and wrap it with a <strong>
+   *
+   * @param {String} target
+   * @param {Number} start
+   * @param {Number} end
+   * @param {String} what
+   * @return {String}
+   */
+  function replaceAt(target, start, end, what) {
+    return target.substring(0, start) + '<strong>'+ what +'</strong>' + target.substring(end);
+  }
+
+  module.filter('zMatchSubStrings', [
+    '$sce',
+    function ($sce) {
+      return function (prediction) {
+        prediction = prediction || {};
+        var description = prediction.description || '',
+            subStrings = prediction.matched_substrings || [],
+            sub;
+
+        angular.forEach(subStrings, function (subString) {
+          sub = description.substr(subString.offset, subString.length);
+          description = replaceAt(description, subString.offset, (subString.offset + subString.length), sub)
+        });
+        return $sce.trustAsHtml(description);
+      }
+    }
+  ]);
 
   module.directive('zAutoComplete', [
     '$rootScope', '$q', '$timeout',
