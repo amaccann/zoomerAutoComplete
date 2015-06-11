@@ -1,6 +1,8 @@
 @import "common";
 
 $z-border-radius: 5px;
+$z-prediction-result-height: 35px;
+$z-highlighted-result-bg: #0b97c4;
 
 .z-auto-complete-wrapper {
 
@@ -51,7 +53,7 @@ $z-border-radius: 5px;
       padding: 0;
 
       li {
-        height: 25px;
+        height: $z-prediction-result-height;
         margin: 0;
         padding: 0 5px;
         border-top: 1px solid #eee;
@@ -59,7 +61,7 @@ $z-border-radius: 5px;
 
         font-size: 12px;
         color: #333;
-        line-height: 25px;
+        line-height: $z-prediction-result-height;
 
         &:before {
           font-family: FontAwesome, sans-serif;
@@ -70,8 +72,9 @@ $z-border-radius: 5px;
         }
 
         &.highlight {
-          background: #0b97c4;
+          background: $z-highlighted-result-bg;
           color: #fff;
+
           &:before {
             color: #fff;
           }
@@ -91,6 +94,11 @@ $z-border-radius: 5px;
             @include border-radius-on(bottom, left, $z-border-radius);
             @include border-radius-on(bottom, right, $z-border-radius);
           }
+        }
+
+        &:active {
+          background: rgba($z-highlighted-result-bg, 0.25);
+          color: #333;
         }
       }
     }

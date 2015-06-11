@@ -38,7 +38,7 @@
     margin: 0;
     padding: 0; }
     .z-auto-complete-wrapper .z-auto-complete-results ul li {
-      height: 25px;
+      height: 35px;
       margin: 0;
       padding: 0 5px;
       border-top: 1px solid #eee;
@@ -47,7 +47,7 @@
       white-space: nowrap;
       font-size: 12px;
       color: #333;
-      line-height: 25px; }
+      line-height: 35px; }
       .z-auto-complete-wrapper .z-auto-complete-results ul li:before {
         font-family: FontAwesome, sans-serif;
         content: '\f041';
@@ -71,3 +71,6 @@
         -webkit-border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px;
         -webkit-border-bottom-right-radius: 5px; }
+      .z-auto-complete-wrapper .z-auto-complete-results ul li:active {
+        background: rgba(11, 151, 196, 0.25);
+        color: #333; }

@@ -4,7 +4,7 @@
   var angular = window.angular,
       google = window.google,
       module = angular.module('zoomer-auto-complete', []),
-      predictionDelay = 750,
+      predictionDelay = 500,
       blurDelay = 350,
       tpl;
 
@@ -31,19 +31,64 @@
 
       /**
        * Controller shared across instances of the Directives
+       *
+       * @param {Object} $scope
        */
-      function controller() {
+      function controller($scope) {
         var dummy = document.createElement('div'),
+            autoCompleteService,
             placesService;
 
-        this.init = function () {
-          var service = $q.defer();
+        /**
+         * Check for coordinates
+         *
+         * @return {Object}
+         */
+        this.getLocation = function () {
+          var location = $scope.locationBias || {},
+            latitude = location.latitude || location.lat,
+            longitude = location.longitude || location.long || location.lon;
+          return new google.maps.LatLng(latitude, longitude);
+        };
+
+        /**
+         * Format getQueryPredictions params
+         *
+         * @param {String} text
+         * @return {Object}
+         */
+        this.getOptions = function (text) {
+          var radius = getMetres($scope.milesRadius);
+          return {
+            input: text,
+            radius: radius,
+            location: this.getLocation()
+          };
+        };
+
+        /**
+         * Use Google AutocompleteService to get predictions of possible places
+         *
+         * @param {String} text
+         * @return {Object} $promise
+         */
+        this.getPrediction = function (text) {
+          var q = $q.defer(),
+              options = this.getOptions(text);
+
           if (!google) {
-            service.reject('missing Google library!');
-            return service.promise;
+            q.reject('missing Google library!');
+            return q.promise;
           }
-          service.resolve(new google.maps.places.AutocompleteService());
-          return service.promise;
+
+          if (!autoCompleteService) {
+            autoCompleteService = new google.maps.places.AutocompleteService();
+          }
+          autoCompleteService.getQueryPredictions(options, function (predictions, status) {
+            //q.resolve(self.parsePlace(place, status));
+            q.resolve({ predictions: (predictions || []), status: status })
+          });
+          return q.promise;
         };
 
         /**
@@ -70,22 +115,30 @@
           return q.promise;
         };
 
+        /**
+         * Iterate across the place object, turning it into formatted address
+         *
+         * @param {Object} place
+         * @param {String} status
+         * @return {Object}
+         */
         this.parsePlace = function (place, status) {
           place = place || {};
           var components = place.address_components || [],
               data = {};
+
           angular.forEach(components, function (component) {
             data[component.types[0]] = {
               short_name: component.short_name,
               long_name: component.long_name
             };
           });
+
           return {
             place: data,
             status: status
           };
         }
-
       }
 
       /**
@@ -98,17 +151,14 @@
        */
       function link(scope, element, attributes, controller) {
         var inputEl = element.find('input'),
+            previousInput = '',
             el = element[0],
             classNames = el.className,
             id = el.id,
-            autoCompleteService,
             reset,
-            getLocation,
             getPredictions,
             getPlaceDetails,
-            configure,
-            timeout,
-            setError;
+            timeout;
 
         classNames = classNames.replace(/z-auto-complete-wrapper|ng-isolate-scope/gi, '');
         element.removeAttr('id');
@@ -169,6 +219,10 @@
             $timeout.cancel(timeout);
           }
 
+          if (keyCode === 32) { // space
+            return getPredictions(input);
+          }
+
           if (keyCode === 13) { // return
             e.preventDefault();
             return scope.setPrediction();
@@ -204,41 +258,29 @@
           });
         };
 
+        /**
+         * Reset all values
+         */
         reset = function () {
           scope.highlightIndex = 0;
           scope.selected = null;
           scope.predictions = [];
           scope.showDropdown = false;
-        };
-
-        /**
-         * Check for coordinates
-         */
-        getLocation = function () {
-          var location = scope.locationBias || {},
-              latitude = location.latitude || location.lat,
-              longitude = location.longitude || location.long || location.lon;
-          return new google.maps.LatLng(latitude, longitude);
+          previousInput = '';
         };
 
         /**
          * Assume text supplied, make a request to Google server for predictions
          */
         getPredictions = function (text) {
-          if (!autoCompleteService || !text || text === '') {
+          if (!text || text === '' || text === previousInput) {
             return;
           }
-          var radius = getMetres(attributes.zMilesRadius);
+          previousInput = text;
 
-          autoCompleteService.getQueryPredictions({
-          //autoCompleteService.getPlacePredictions({
-              input: text,
-              radius: radius,
-              location: getLocation()
-          }, function (predictions) {
-            scope.$evalAsync(function () {
-              scope.predictions = predictions;
-            })
+          controller.getPrediction(text).then(function (data) {
+            data = data || {};
+            scope.predictions = data.predictions || [];
           });
         };
 
@@ -256,19 +298,6 @@
             reset();
           });
         };
-
-        configure = function (service) {
-          if (!service) {
-            return;
-          }
-          autoCompleteService = service;
-        };
-
-        setError = function (error) {
-          console.error(error);
-        };
-
-        controller.init().then(configure, setError);
       }
 
       return {
@@ -277,7 +306,8 @@
         replace: true,
         scope: {
           locationBias: '=zLocation',
-          callback: '&zAutoComplete'
+          callback: '&zAutoComplete',
+          milesRadius: '=zMilesRadius'
         },
         template: tpl
       }
