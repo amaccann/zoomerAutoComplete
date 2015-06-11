@@ -11,7 +11,9 @@
   tpl = '<div class="z-auto-complete-wrapper">' +
     '<div class="z-auto-complete-input"><input ng-focus="toggleShowDropdown(true)" ng-blur="blur()" type="text" ng-keyup="keyUp($event)">' +
     '<div ng-if="showDropdown && predictions.length" class="z-auto-complete-results"><ul>' +
-    '<li ng-repeat="prediction in predictions" ng-bind="prediction.description" ng-click="setPrediction(prediction)" ng-class="{ highlight: $index === highlightIndex }"></li>' +
+    '<li ng-repeat="prediction in predictions" ng-click="setPrediction(prediction)" ng-class="{ selected: prediction.selected, highlight: $index === highlightIndex }">' +
+    '<i class="fa" ng-class="{ \'fa-cog fa-spin\': prediction.selected, \'fa-map-marker\': !prediction.selected }"></i><span ng-bind="prediction.description"></span>' +
+    '</li>' +
     '</ul><p>Powered by <span>Google</span></p></div></div></div>';
 
   /**
@@ -85,7 +87,6 @@
             autoCompleteService = new google.maps.places.AutocompleteService();
           }
           autoCompleteService.getQueryPredictions(options, function (predictions, status) {
-            //q.resolve(self.parsePlace(place, status));
             q.resolve({ predictions: (predictions || []), status: status })
           });
           return q.promise;
@@ -176,11 +177,14 @@
          * If the user presses carriage return, check current state of results and parse accordingly.
          */
         scope.setPrediction = function (prediction) {
+
           if (prediction) {
+            prediction.selected = true;
             return getPlaceDetails(prediction.place_id);
           }
 
           if (scope.predictions.length) {
+            scope.predictions[scope.highlightIndex].selected = true;
             getPlaceDetails(scope.predictions[scope.highlightIndex].place_id);
           }
         };
