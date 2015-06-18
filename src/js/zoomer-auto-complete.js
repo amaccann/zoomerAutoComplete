@@ -198,6 +198,9 @@
 
         inputEl[0].setAttribute('id', id);
         inputEl.addClass(classNames);
+        if (attributes.zPlaceholder) {
+          inputEl[0].setAttribute('placeholder', attributes.zPlaceholder);
+        }
 
         scope.showDropdown = false;
         scope.predictions = [];
