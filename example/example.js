@@ -8,6 +8,7 @@
   module.run([
     '$rootScope',
     function ($rootScope) {
+      $rootScope.testProp = 'hi there';
       $rootScope.locationSelected = null;
 
       $rootScope.myLocation1 = {

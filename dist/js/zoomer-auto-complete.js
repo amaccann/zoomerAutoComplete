@@ -9,7 +9,7 @@
       tpl;
 
   tpl = '<div class="z-auto-complete-wrapper">' +
-    '<div class="z-auto-complete-input"><input ng-focus="toggleShowDropdown(true)" ng-blur="blur()" type="text" ng-keyup="keyUp($event)">' +
+    '<div class="z-auto-complete-input"><input ng-model="zNgModel" ng-focus="toggleShowDropdown(true)" ng-blur="blur()" type="text" ng-keyup="keyUp($event)">' +
     '<div ng-if="showDropdown && predictions.length" class="z-auto-complete-results"><ul>' +
     '<li ng-repeat="prediction in predictions" ng-click="setPrediction(prediction)" ng-class="{ selected: prediction.selected, highlight: $index === highlightIndex }">' +
     '<i class="fa" ng-class="{ \'fa-cog fa-spin\': prediction.selected, \'fa-map-marker\': !prediction.selected }"></i><span ng-bind-html="prediction| zMatchSubStrings"></span>' +
@@ -345,7 +345,8 @@
         scope: {
           locationBias: '=zLocation',
           callback: '&zAutoComplete',
-          milesRadius: '=zMilesRadius'
+          milesRadius: '=zMilesRadius',
+          zNgModel: '=ngModel'
         },
         template: tpl
       }

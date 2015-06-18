@@ -21,9 +21,19 @@
           <input class="form-control" id="exampleInput2" z-auto-complete="doStuff(selected)" z-location="myLocation2" z-placeholder="Enter values">
         </div>
         <div class="form-group">
+          <label for="exampleInput3">Location Bias: {{myLocation2}}, default radius (include binding to <code>$rootScope.testProp</code> property)</label>
+          <input class="form-control" ng-model="testProp" id="exampleInput3" z-auto-complete="doStuff(selected)" z-location="myLocation2" z-placeholder="Enter values">
+        </div>
+        <div class="form-group">
           <label for="exampleInput3">Default input</label>
           <input class="form-control" id="exampleInput3">
         </div>
+        <p>
+          <a ng-href="" ng-click="testProp='new text 1!'">Click me</a> |
+          <a ng-href="" ng-click="testProp='new text 2!'">Click me</a> |
+          <a ng-href="" ng-click="testProp='new text 3!'">Click me</a> |
+        </p>
+        <p ng-bind="testProp"></png-bind>
       </form>
       <pre ng-bind="locationSelected|json:2"></pre>
     </div>
