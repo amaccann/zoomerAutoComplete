@@ -1,7 +1,10 @@
 {
   "name": "zoomer-auto-complete",
   "version": "0.0.4",
-  "main": "dist/js/zoomer-auto-complete.js",
+  "main": [
+    "./dist/js/zoomer-auto-complete.js",
+    "./dist/css/zoomer-auto-complete.css"
+  ],
   "ignore": [
     "bower_components",
     "example",
