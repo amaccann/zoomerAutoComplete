@@ -11,7 +11,7 @@
 
   <body ng-app="exampleApp">
     <div class="wrapper">
-      <form>
+      <form name="testForm" ng-submit="submitForm()">
         <div class="form-group">
           <label for="exampleInput1">Location Bias: {{myLocation1}}, 20 mile radius</label>
           <input class="form-control" id="exampleInput1" z-auto-complete="doStuff(selected)" z-miles-radius="20" z-location="myLocation1">
@@ -28,6 +28,9 @@
           <label for="exampleInput3">Default input</label>
           <input class="form-control" id="exampleInput3">
         </div>
+        <p>
+          <button type="submit">submit test</button>
+        </p>
         <p>
           <a ng-href="" ng-click="testProp='new text 1!'">Click me</a> |
           <a ng-href="" ng-click="testProp='new text 2!'">Click me</a> |

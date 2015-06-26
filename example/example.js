@@ -11,6 +11,10 @@
       $rootScope.testProp = 'hi there';
       $rootScope.locationSelected = null;
 
+      $rootScope.submitForm = function () {
+        console.log('submit the form!')
+      };
+
       $rootScope.myLocation1 = {
         latitude: 39.6638557,
         longitude: -75.656541

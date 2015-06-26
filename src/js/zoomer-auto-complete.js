@@ -9,7 +9,7 @@
       tpl;
 
   tpl = '<div class="z-auto-complete-wrapper">' +
-    '<div class="z-auto-complete-input"><input ng-model="zNgModel" ng-focus="toggleShowDropdown(true)" ng-blur="blur()" type="text" ng-keyup="keyUp($event)">' +
+    '<div class="z-auto-complete-input"><input ng-model="zNgModel" ng-focus="focus()" ng-blur="blur()" type="text" ng-keyup="keyUp($event)">' +
     '<div ng-if="showDropdown && predictions.length" class="z-auto-complete-results"><ul>' +
     '<li ng-repeat="prediction in predictions" ng-click="setPrediction(prediction)" ng-class="{ selected: prediction.selected, highlight: $index === highlightIndex }">' +
     '<i class="fa" ng-class="{ \'fa-cog fa-spin\': prediction.selected, \'fa-map-marker\': !prediction.selected }"></i><span ng-bind-html="prediction| zMatchSubStrings"></span>' +
@@ -183,11 +183,14 @@
        */
       function link(scope, element, attributes, controller) {
         var inputEl = element.find('input'),
+            form = angular.element(inputEl[0],form),
             previousInput = '',
             el = element[0],
             classNames = el.className,
             id = el.id,
             reset,
+            bindFormKeypress,
+            unbindFormKeypress,
             getPredictions,
             getPlaceDetails,
             timeout;
@@ -277,11 +280,20 @@
         };
 
         /**
+         * Show drop-down onFocus and bind to form
+         */
+        scope.focus = function () {
+          scope.toggleShowDropdown(true);
+          bindFormKeypress();
+        };
+
+        /**
          * Hide the drop-down after delay
          */
         scope.blur = function () {
           $timeout(function () {
             scope.toggleShowDropdown(false);
+            unbindFormKeypress();
           }, blurDelay);
         };
 
@@ -294,6 +306,25 @@
           scope.$evalAsync(function () {
             scope.showDropdown = !!toggle;
           });
+        };
+
+        /**
+         * Prevent carriage-return submissions when using auto-complete
+         */
+        bindFormKeypress = function () {
+          form.on('keydown', function (e) {
+            if (e.keyCode === 13) {
+              e.preventDefault();
+              return false;
+            }
+          });
+        };
+
+        /**
+         * Unbind binding
+         */
+        unbindFormKeypress = function () {
+          form.off('keydown');
         };
 
         /**
