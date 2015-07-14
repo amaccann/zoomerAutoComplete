@@ -188,6 +188,7 @@
             el = element[0],
             classNames = el.className,
             id = el.id,
+            name = el.getAttribute('name'),
             reset,
             bindFormKeypress,
             unbindFormKeypress,
@@ -199,6 +200,9 @@
         element.removeAttr('id');
         element.removeClass(classNames);
 
+        if (name) {
+          inputEl[0].setAttribute('name', name);
+        }
         inputEl[0].setAttribute('id', id);
         inputEl.addClass(classNames);
         if (attributes.zPlaceholder) {
