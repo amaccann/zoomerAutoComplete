@@ -1,7 +1,8 @@
 (function (window, document) {
   'use strict';
 
-  var angular = window.angular,
+  var errorMsg = 'Google library missing!',
+      angular = window.angular,
       google = window.google,
       module = angular.module('zoomer-auto-complete', []),
       predictionDelay = 500,
@@ -107,12 +108,14 @@
          */
         this.getPrediction = function (text) {
           var q = $q.defer(),
-              options = this.getOptions(text);
+              options;
 
           if (!google) {
-            q.reject('missing Google library!');
+            q.reject(errorMsg);
             return q.promise;
           }
+
+          options = this.getOptions(text);
 
           if (!autoCompleteService) {
             autoCompleteService = new google.maps.places.AutocompleteService();
@@ -134,7 +137,7 @@
               self = this;
 
           if (!google) {
-            q.reject('missing Google library!');
+            q.reject(errorMsg);
             return q.promise;
           }
 

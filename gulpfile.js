@@ -4,6 +4,8 @@
   require('shelljs/global');
 
   var gulp = require('gulp'),
+      uglify = require('gulp-uglify'),
+      rename = require("gulp-rename"),
       sass = require('gulp-sass'),
       base64 = require('gulp-base64'),
       changed = require('gulp-changed'),
@@ -45,22 +47,16 @@
         debug: true
       }))
       .pipe(gulp.dest(destinationPaths.css))
-
-    //gulp.src(destinationPaths.css + '**/*')
-    //  .pipe(base64({
-    //    baseDir: 'src/images',
-    //    extensions: ['svg', 'png', /\.jpg#datauri$/i],
-    //    exclude:    [/\.server\.(com|net)\/dynamic\//, '--live.jpg'],
-    //    maxImageSize: 8*1024, // bytes
-    //    debug: true
-    //  }))
-    //  .pipe(gulp.dest(destinationPaths.css + '/new'))
       .pipe(connect.reload());
   });
 
   gulp.task('compile-js', function () {
     gulp.src(sourcePaths.js)
       .pipe(changed(destinationPaths.js))
+      .pipe(uglify())
+      .pipe(rename({
+        suffix: '-min',
+      }))
       .pipe(gulp.dest(destinationPaths.js))
       .pipe(connect.reload());
   });
