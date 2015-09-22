@@ -28,33 +28,38 @@
     return miles * 1609.34;
   }
 
-  /**
-   * Swap the text at start:end and wrap it with a <strong>
-   *
-   * @param {String} target
-   * @param {Number} start
-   * @param {Number} end
-   * @param {String} what
-   * @return {String}
-   */
-  function replaceAt(target, start, end, what) {
-    return target.substring(0, start) + '<strong>'+ what +'</strong>' + target.substring(end);
-  }
-
   module.filter('zMatchSubStrings', [
     '$sce',
     function ($sce) {
+      /**
+       * Iterate across the subString matches, spliting the string based on the provided offset + length.
+       * For each loop, remove the previous subString that was matched, so subsequent matches are less the
+       * previous subString match
+       *
+       * @param {Object} prediction
+       * @return {String}
+       */
       return function (prediction) {
         prediction = prediction || {};
         var description = prediction.description || '',
             subStrings = prediction.matched_substrings || [],
-            sub;
+            previous,
+            result = [];
 
-        angular.forEach(subStrings, function (subString) {
-          sub = description.substr(subString.offset, subString.length);
-          description = replaceAt(description, subString.offset, (subString.offset + subString.length), sub)
+        angular.forEach(subStrings, function (subString, index) {
+          var offset = subString.offset - (previous ? previous.length : 0),
+            before = description.substr(0, offset),
+            target = description.substr(offset, subString.length),
+            after = description.substr((offset + subString.length), description.length);
+
+          result.push(before, '<strong>', target, '</strong>');
+          if (index === subStrings.length - 1) {
+            result.push(after);
+          }
+          description = description.substr((offset + subString.length), description.length);
+          previous = subString;
         });
-        return $sce.trustAsHtml(description);
+        return $sce.trustAsHtml(result.join(''));
       }
     }
   ]);
@@ -160,14 +165,25 @@
         this.parsePlace = function (place, status) {
           place = place || {};
           var components = place.address_components || [],
-              data = {};
+              data = {},
+              type;
 
           angular.forEach(components, function (component) {
-            data[component.types[0]] = {
+            type = component.types[0];
+            if (!type) {
+              return;
+            }
+
+            data[type] = {
               short_name: component.short_name,
               long_name: component.long_name
             };
           });
+
+          data.raw = {
+            address_components: place.address_components,
+            formatted_address: place.formatted_address
+          };
 
           return {
             place: data,

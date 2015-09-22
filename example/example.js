@@ -26,6 +26,7 @@
       };
 
       $rootScope.doStuff = function (selected) {
+        console.log(selected);
         $rootScope.locationSelected = selected || null;
       };
     }
