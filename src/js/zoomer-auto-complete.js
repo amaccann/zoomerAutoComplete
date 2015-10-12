@@ -160,12 +160,12 @@
          * Iterate across the place object, turning it into formatted address
          *
          * @param {Object} place
-         * @param {Object} suggestion
+         * @param {Object} prediction
          * @param {String} status
          * @return {Object}
          */
-        this.parsePlace = function (place, suggestion, status) {
-          suggestion = suggestion || {};
+        this.parsePlace = function (place, prediction, status) {
+          prediction = prediction || {};
           place = place || {};
           var components = place.address_components || [],
               data = {},
@@ -186,7 +186,7 @@
           data.raw = {
             address_components: place.address_components,
             formatted_address: place.formatted_address,
-            suggestion: suggestion
+            prediction: prediction
           };
 
           return {
