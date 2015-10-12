@@ -134,12 +134,13 @@
         /**
          * Get instance of PlacesService and fetch place details
          *
-         * @param {String} placeId
-         * @return {Object} promise
+         * @param {Object} prediction
+         * @return {Object} $promise
          */
-        this.getPlace = function (placeId) {
-          var q = $q.defer(),
-              self = this;
+        this.getPlace = function (prediction) {
+          var placeId = prediction.place_id,
+            q = $q.defer(),
+            self = this;
 
           if (!google) {
             q.reject(errorMsg);
@@ -150,7 +151,7 @@
             placesService = new google.maps.places.PlacesService(dummy);
           }
           placesService.getDetails({ placeId: placeId }, function (place, status) {
-            q.resolve(self.parsePlace(place, status));
+            q.resolve(self.parsePlace(place, prediction, status));
           });
           return q.promise;
         };
@@ -159,10 +160,12 @@
          * Iterate across the place object, turning it into formatted address
          *
          * @param {Object} place
+         * @param {Object} suggestion
          * @param {String} status
          * @return {Object}
          */
-        this.parsePlace = function (place, status) {
+        this.parsePlace = function (place, suggestion, status) {
+          suggestion = suggestion || {};
           place = place || {};
           var components = place.address_components || [],
               data = {},
@@ -182,7 +185,8 @@
 
           data.raw = {
             address_components: place.address_components,
-            formatted_address: place.formatted_address
+            formatted_address: place.formatted_address,
+            suggestion: suggestion
           };
 
           return {
@@ -240,12 +244,12 @@
 
           if (prediction) {
             prediction.selected = true;
-            return getPlaceDetails(prediction.place_id);
+            return getPlaceDetails(prediction);
           }
 
           if (scope.predictions.length) {
             scope.predictions[scope.highlightIndex].selected = true;
-            getPlaceDetails(scope.predictions[scope.highlightIndex].place_id);
+            getPlaceDetails(scope.predictions[scope.highlightIndex]);
           }
         };
 
@@ -379,10 +383,12 @@
         /**
          * Retrieve the place details from the server
          *
-         * @param {String} placeId
+         * @param {Object} prediction
          */
-        getPlaceDetails = function (placeId) {
-          controller.getPlace(placeId).then(function (data) {
+        getPlaceDetails = function (prediction) {
+          prediction = prediction || {};
+
+          controller.getPlace(prediction).then(function (data) {
             data = data || {};
             scope.selected = data.place;
             scope.callback(scope);
